@@ -8,6 +8,7 @@
     <title>Document</title>
     <link rel="stylesheet" href="{{asset('bootstrap/bootstrap.min.css')}}">
     <link rel="stylesheet" href="{{asset('sweetalert/sweetalert2.min.css')}}">
+    <link rel="stylesheet" href="{{asset('datatable/dataTables.dataTables.min.css')}}">
 </head>
 <body>
 
@@ -37,20 +38,38 @@
 </div>
 
     <div class="containet mt-5">
-        <div class="d-flex justify-content-between">
+        <div class="d-flex justify-content-between  mb-3">
             <h1 class="text-danger">Category</h1>
             <!-- Button trigger modal -->
             <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
                 Create
             </button>
         </div>
+        <table class="table" id="categoryTable">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">name</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
 
     <script src="{{asset('js/jquery-3.6.0.min.js')}}"></script>
+    <script src="{{asset('datatable/dataTables.min.js')}}"></script>
     <script src="{{asset('sweetalert/sweetalert2.min.js')}}"></script>
     <script src="{{asset('bootstrap/bootstrap.bundle.min.js')}}"></script>
     <script>
         $(document).ready(function () {
+
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
 
             $('#createModalLabel').html('Create Category');
             $('#saveBtn').html('Save Category');
@@ -67,11 +86,6 @@
                 var formData = new FormData(form);
                 // console.log(formData);
 
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    }
-                });
 
                 $.ajax({
                     type: "POST",
@@ -98,6 +112,17 @@
                         }
                     }
                 });
+            });
+
+            $('#categoryTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: "{{route('getcategories')}}",
+                columns: [
+                    {data : 'id'},
+                    {data : 'name'},
+                    {data : 'action', name: 'action', oderable:false, searchable: false},
+                ]
             });
         });
     </script>
